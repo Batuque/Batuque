@@ -141,8 +141,8 @@ cv2.createTrackbar('v_low ', 'Parameters', 0, 355, change_v_low )
 cv2.createTrackbar('v_high', 'Parameters', 0, 355, change_v_high)
 
 mixer.init()
-drum_Caixa = mixer.Sound('Caixa.wav')
-drum_Chimbal = mixer.Sound('Chimbal.ogg')
+drum_Caixa = mixer.Sound('Caixa.mp3')
+drum_Chimbal = mixer.Sound('Chimbal.mp3')
 drum_Bumbo = mixer.Sound('Bumbo.wav')
 drum_Crash = mixer.Sound('Crash.mp3')
 
