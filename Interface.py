@@ -1,5 +1,4 @@
 import time
-
 import pygame
 import os
 import subprocess
@@ -11,7 +10,7 @@ pygame.init()
 # Definir as dimensões da janela
 largura = pygame.display.Info().current_w
 altura = pygame.display.Info().current_h
-tela = pygame.display.set_mode((largura, altura), pygame.NOFRAME)
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 # Carregar imagens
 background_image = pygame.image.load("Images/tela inicial/imagem_de_fundo.png")
@@ -28,11 +27,39 @@ PRETO = (0, 0, 0)
 BRANCO = (255, 255, 255)
 
 # Definir fonte para a mensagem de boas-vindas
-fonte = pygame.font.Font(None, 72)
+fonte = pygame.font.Font(None, 145)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
+
+# Variável global para armazenar o processo do Batuque.py
+processo_batuque = None
+
 def tocar():
+    global processo_batuque
+
+    # Verificar se o processo do Batuque.py já está em execução
+    if processo_batuque and processo_batuque.poll() is None:
+        # Se estiver em execução, não faz nada
+        return
+
+    # Mostrar a tela de loading
+    tempo_carregamento = 2
+    tempo_inicial = time.time()
+    while True:
+        tempo_atual = time.time()
+        tempo_decorrido = tempo_atual - tempo_inicial
+        loading_progress = tempo_decorrido / tempo_carregamento
+        loading_screen(loading_progress)
+        if tempo_decorrido >= tempo_carregamento:
+            break
+    # Esperar um curto período de tempo para simular o carregamento
+    pygame.time.wait(2000)
+
     # Executar o script Batuque.py em uma nova janela separada
-    subprocess.Popen([sys.executable, "Batuque.py", str(largura), str(altura)])
+    processo_batuque = subprocess.Popen([sys.executable, "Batuque.py"])
+
+    # Encerrar a interface.py
+    pygame.quit()
+    sys.exit()
 
 def sair():
     pygame.quit()
@@ -231,7 +258,6 @@ def loading_screen(loading_progress):
     pygame.draw.rect(tela, BRANCO, (100, altura - 50, loading_progress * (largura - 200), 20))
 
     pygame.display.flip()
-
 def main():
     # Definir o tempo de carregamento (em segundos)
     tempo_carregamento = 2
@@ -249,13 +275,10 @@ def main():
     # Esperar um curto período de tempo para simular o carregamento
     pygame.time.wait(2000)
 
-    # Exibir botões
     tela.blit(background_image, (0, 0))
     tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 20))
     tela.blit(button_settings_image, (largura // 4 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 20))
     tela.blit(button_exit_image, (largura * 3 // 4 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 20))
-
-    # Exibir mensagem de boas-vindas
     tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
 
     pygame.display.flip()
@@ -263,7 +286,7 @@ def main():
     # Iniciar música
     pygame.mixer.music.play(-1)  # Loop infinito
 
-    # Loop do jogo
+    # Loop principal do programa
     running = True
     while running:
         for event in pygame.event.get():
@@ -280,6 +303,8 @@ def main():
                     configuracoes()
                 elif button_exit_rect.collidepoint(event.pos):
                     sair()
+
+        pygame.display.flip()
 
 # Executar o programa
 if __name__ == "__main__":

@@ -1,11 +1,12 @@
+import subprocess
+import sys
 import numpy as np
 import cv2
 import time
 from pygame import mixer
-import sys
 
-width = int(sys.argv[1])
-height = int(sys.argv[2])
+width = 1280
+height = 720
 
 last_played_time_Caixa = 0
 last_played_time_Chimbal = 0
@@ -257,7 +258,9 @@ while True:
     key = cv2.waitKey(1) & 0xFF
 
     if key == ord("q"):
-        break
-
-camera.release()
-cv2.destroyAllWindows()
+        # Quando 'q' for pressionado para sair
+        camera.release()
+        cv2.destroyAllWindows()
+        # Reiniciar interface.py
+        subprocess.Popen([sys.executable, "interface.py"])
+        sys.exit()  # Certifique-se de sair do script atual
