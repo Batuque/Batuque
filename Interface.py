@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import os
 import subprocess
@@ -9,7 +11,7 @@ pygame.init()
 # Definir as dimensões da janela
 largura = pygame.display.Info().current_w
 altura = pygame.display.Info().current_h
-tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
+tela = pygame.display.set_mode((largura, altura), pygame.NOFRAME)
 
 # Carregar imagens
 background_image = pygame.image.load("Images/tela inicial/imagem_de_fundo.png")
@@ -28,14 +30,10 @@ BRANCO = (255, 255, 255)
 # Definir fonte para a mensagem de boas-vindas
 fonte = pygame.font.Font(None, 72)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
-
-def tocar():
-    import subprocess
-import sys
-
 def tocar():
     # Executar o script Batuque.py em uma nova janela separada
-    subprocess.Popen([sys.executable, "Batuque.py"])
+    subprocess.Popen([sys.executable, "Batuque.py", str(largura), str(altura)])
+
 def sair():
     pygame.quit()
     sys.exit()
@@ -225,16 +223,29 @@ def configuracoes():
     main()
 
 # Função para mostrar a tela de loading
-def loading_screen():
+def loading_screen(loading_progress):
     tela.fill(PRETO)
     tela.blit(logo_image, (largura // 2 - logo_image.get_width() // 2, altura // 2 - logo_image.get_height() // 2))
+
+    # Desenhar a barra de progresso
+    pygame.draw.rect(tela, BRANCO, (100, altura - 50, loading_progress * (largura - 200), 20))
+
     pygame.display.flip()
 
-# Função principal
 def main():
-    # Mostrar a tela de loading
-    loading_screen()
+    # Definir o tempo de carregamento (em segundos)
+    tempo_carregamento = 2
+    tempo_inicial = time.time()
 
+    # Mostrar a tela de loading
+    while True:
+        tempo_atual = time.time()
+        tempo_decorrido = tempo_atual - tempo_inicial
+        loading_progress = tempo_decorrido / tempo_carregamento
+        loading_screen(loading_progress)
+
+        if tempo_decorrido >= tempo_carregamento:
+            break
     # Esperar um curto período de tempo para simular o carregamento
     pygame.time.wait(2000)
 
