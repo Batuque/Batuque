@@ -29,7 +29,6 @@ def state_machine(summation, sound):
 
     current_time = time.time()
 
-
     if sound == 1:
         drum_Caixa.stop()
         drum_Caixa.play()
@@ -56,7 +55,6 @@ def calc_mask(frame):
     mask = cv2.inRange(hsv, pinkLower, pinkUpper)
     return mask
 
-
 def ROI_analysis(frame, sound):
     global sound_1, sound_2, sound_3, sound_4
 
@@ -66,36 +64,36 @@ def ROI_analysis(frame, sound):
 
     min_value = 30
 
-    if(sound == 1):
-        if(summation >= min_value):
-            if(not sound_1):
+    if (sound == 1):
+        if (summation >= min_value):
+            if (not sound_1):
                 sound_1 = True
                 state_machine(summation, sound)
-        if(summation < min_value):
+        if (summation < min_value):
             sound_1 = False
 
-    if(sound == 2):
-        if(summation >= min_value):
-            if(not sound_2):
+    if (sound == 2):
+        if (summation >= min_value):
+            if (not sound_2):
                 sound_2 = True
                 state_machine(summation, sound)
-        if(summation < min_value):
+        if (summation < min_value):
             sound_2 = False
 
-    if(sound == 3):
-        if(summation >= min_value):
-            if(not sound_3):
+    if (sound == 3):
+        if (summation >= min_value):
+            if (not sound_3):
                 sound_3 = True
                 state_machine(summation, sound)
-        if(summation < min_value):
+        if (summation < min_value):
             sound_3 = False
 
-    if(sound == 4):
-        if(summation >= min_value):
-            if(not sound_4):
+    if (sound == 4):
+        if (summation >= min_value):
+            if (not sound_4):
                 sound_4 = True
                 state_machine(summation, sound)
-        if(summation < min_value):
+        if (summation < min_value):
             sound_4 = False
 
     return mask
@@ -109,38 +107,33 @@ s_high = 170
 v_low = 210
 v_high = 260
 
-
 def change_h_low(val):
     global h_low
     h_low = val
+
 def change_h_high(val):
     global h_high
     h_high = val
+
 def change_v_low(val):
     global v_low
     v_low = val
+
 def change_v_high(val):
     global v_high
     v_high = val
+
 def change_s_low(val):
     global s_low
     s_low = val
+
 def change_s_high(val):
     global s_high
     s_high = val
 
-
 def change_h_low(val):
     global h_low
     h_low = val
-
-cv2.namedWindow('Parameters')
-cv2.createTrackbar('h_low ', 'Parameters', 0, 355, change_h_low)
-cv2.createTrackbar('h_high', 'Parameters', 0, 355, change_h_high)
-cv2.createTrackbar('s_low ', 'Parameters', 0, 355, change_s_low )
-cv2.createTrackbar('s_high', 'Parameters', 0, 355, change_s_high)
-cv2.createTrackbar('v_low ', 'Parameters', 0, 355, change_v_low )
-cv2.createTrackbar('v_high', 'Parameters', 0, 355, change_v_high)
 
 mixer.init()
 drum_Caixa = mixer.Sound('Caixa.mp3')
@@ -183,8 +176,6 @@ Bumbo_thickness = [200, 100]
 Bumbo_top = [Bumbo_center[0] - Bumbo_thickness[0] // 2, Bumbo_center[1] - Bumbo_thickness[1] // 2]
 Bumbo_btm = [Bumbo_center[0] + Bumbo_thickness[0] // 2, Bumbo_center[1] + Bumbo_thickness[1] // 2]
 
-
-
 time.sleep(1)
 
 while True:
@@ -196,7 +187,6 @@ while True:
 
     if not ret:
         break
-
 
     Caixa_ROI = np.copy(frame[Caixa_top[1]:Caixa_btm[1], Caixa_top[0]:Caixa_btm[0]])
     mask = ROI_analysis(Caixa_ROI, 1)
@@ -254,7 +244,6 @@ while True:
     mask = calc_mask(frame)
 
     cv2.imshow('Output', frame)
-    cv2.imshow('Mask', mask)
     key = cv2.waitKey(1) & 0xFF
 
     if key == ord("q"):
@@ -262,5 +251,6 @@ while True:
         camera.release()
         cv2.destroyAllWindows()
         # Reiniciar interface.py
-        subprocess.Popen([sys.executable, "interface.py"])
+        # subprocess.Popen([sys.executable, "interface.py"])
         sys.exit()  # Certifique-se de sair do script atual
+
