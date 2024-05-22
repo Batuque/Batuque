@@ -1,8 +1,10 @@
 import time
+from itertools import cycle
+from pygame.locals import *
 import pygame
-import os
-import subprocess
 import sys
+from Batuque import run_batuque
+import cv2
 
 # Inicializar o Pygame
 pygame.init()
@@ -10,7 +12,7 @@ pygame.init()
 # Definir as dimensões da janela
 largura = pygame.display.Info().current_w
 altura = pygame.display.Info().current_h
-tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
+tela = pygame.display.set_mode((largura, altura), pygame.SCALED)
 
 # Carregar imagens
 background_image = pygame.image.load("Images/tela inicial/imagem_de_fundo.png")
@@ -30,16 +32,11 @@ BRANCO = (255, 255, 255)
 fonte = pygame.font.Font(None, 145)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
 
-# Variável global para armazenar o processo do Batuque.py
-processo_batuque = None
-
 def tocar():
-    global processo_batuque
+    pygame.init()
 
-    # Verificar se o processo do Batuque.py já está em execução
-    if processo_batuque and processo_batuque.poll() is None:
-        # Se estiver em execução, não faz nada
-        return
+    # Parar a música antes de iniciar
+    pygame.mixer.music.stop()
 
     # Mostrar a tela de loading
     tempo_carregamento = 2
@@ -54,12 +51,38 @@ def tocar():
     # Esperar um curto período de tempo para simular o carregamento
     pygame.time.wait(2000)
 
-    # Executar o script Batuque.py em uma nova janela separada
-    processo_batuque = subprocess.Popen([sys.executable, "Batuque.py"])
+    #Batuque.py
+    screen = pygame.display.set_mode((largura, altura))
+    clock = pygame.time.Clock()
+    frames = cycle(run_batuque())
 
-    # Encerrar a interface.py
-    pygame.quit()
-    sys.exit()
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                return
+            elif event.type == KEYDOWN:
+                if event.key == K_q:
+                    # Retorna ao menu principal
+                    main()
+
+        frame = next(frames)
+        # Rotaciona o frame para a direita
+        frame_rotacionado = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        frame_corrigido = cv2.flip(frame_rotacionado, 0)
+        frame_surface = pygame.surfarray.make_surface(cv2.cvtColor(frame_corrigido, cv2.COLOR_BGR2RGB))
+
+        # Obtém as dimensões da tela e da superfície da imagem
+        #tela_largura, tela_altura = screen.get_size()# Já tem
+        imagem_largura, imagem_altura = frame_surface.get_size()
+
+        # Calcula a posição para centralizar a imagem
+        pos_x = (largura - imagem_largura) // 2
+        pos_y = (altura - imagem_altura) // 2
+
+        screen.blit(frame_surface, (pos_x, pos_y))
+        pygame.display.flip()
+        clock.tick(30)
 
 def sair():
     pygame.quit()
