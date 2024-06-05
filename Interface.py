@@ -15,14 +15,14 @@ altura = pygame.display.Info().current_h
 tela = pygame.display.set_mode((largura, altura), pygame.SCALED)
 
 # Carregar imagens
-background_image = pygame.image.load("Images/tela inicial/imagem_de_fundo.png")
-logo_image = pygame.image.load("Images/tela inicial/logo.png")
-button_play_image = pygame.image.load("Images/tela inicial/tocar.png")
-button_settings_image = pygame.image.load("Images/tela inicial/configura.png")
-button_exit_image = pygame.image.load("Images/tela inicial/sair.png")
+background_image = pygame.image.load("src/Images/tela inicial/imagem_de_fundo.png")
+logo_image = pygame.image.load("src/Images/tela inicial/logo.png")
+button_play_image = pygame.image.load("src/Images/tela inicial/tocar.png")
+button_settings_image = pygame.image.load("src/Images/tela inicial/configura.png")
+button_exit_image = pygame.image.load("src/Images/tela inicial/sair.png")
 
 # Carregar música
-pygame.mixer.music.load("Images/tela inicial/drum_no_copyright.mp3")
+pygame.mixer.music.load("src/Images/tela inicial/drum_no_copyright.mp3")
 
 # Definir cores
 PRETO = (0, 0, 0)

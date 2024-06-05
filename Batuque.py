@@ -18,10 +18,10 @@ def run_batuque():
     # Inicializar o mixer do pygame
     mixer.init()
     drum_sounds = [
-        mixer.Sound('Caixa.mp3'),
-        mixer.Sound('Chimbal.mp3'),
-        mixer.Sound('Bumbo.wav'),
-        mixer.Sound('Crash.mp3')
+        mixer.Sound('src/sounds/Caixa.mp3'),
+        mixer.Sound('src/sounds/Chimbal.mp3'),
+        mixer.Sound('src/sounds/Bumbo.wav'),
+        mixer.Sound('src/sounds/Crash.mp3')
     ]
 
     def state_machine(sound_index):
@@ -59,7 +59,7 @@ def run_batuque():
 
     # Carregar e redimensionar as imagens dos instrumentos
     instruments = ['Chimbal.png', 'Caixa.png', 'Bumbo.png', 'Crash.png']
-    instrument_images = [cv2.resize(cv2.imread(f'./Images/{img}'), (200, 200), interpolation=cv2.INTER_CUBIC) for img in instruments]
+    instrument_images = [cv2.resize(cv2.imread(f'./src/Images/{img}'), (200, 200), interpolation=cv2.INTER_CUBIC) for img in instruments]
     Caixa = cv2.resize(instrument_images[1], (200, 150), interpolation=cv2.INTER_CUBIC)
 
     # Definir as regiões de interesse (ROI) dos instrumentos
