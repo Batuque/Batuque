@@ -51,36 +51,45 @@ def tocar():
     # Esperar um curto período de tempo para simular o carregamento
     pygame.time.wait(2000)
 
-    # Batuque.py
+    # Iniciar a tela do pygame para o batuque
     screen = pygame.display.set_mode((largura, altura))
     clock = pygame.time.Clock()
     frames = cycle(run_batuque())
 
-    configurando = False
+    # Variável para controlar se o menu está aberto
+    menu_aberto = False
 
-    while True:
+    # Variável de controle para determinar quando voltar ao menu principal
+    voltar_ao_menu_principal = False
+
+    # Loop principal para a função tocar()
+    while not voltar_ao_menu_principal:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 return
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    configurando = not configurando
-            elif event.type == MOUSEBUTTONDOWN and configurando:
+                    menu_aberto = not menu_aberto
+                    if menu_aberto:
+                        configuracoes(screen)
+                    else:
+                        voltar_ao_menu_principal = True  # Define a variável de controle para voltar ao menu principal
+            elif event.type == MOUSEBUTTONDOWN and menu_aberto:  # Verifica o clique somente se o menu estiver aberto
                 mouse_pos = pygame.mouse.get_pos()
-                if 100 <= mouse_pos[0] <= 400:
-                    if 200 <= mouse_pos[1] <= 250:
-                        menu_resolucoes()
-                    elif 300 <= mouse_pos[1] <= 350:
-                        menu_volume()
-                    elif 400 <= mouse_pos[1] <= 450:
-                        configurando = False
-                        return  # Voltar ao menu principal
+                if 100 <= mouse_pos[0] <= 400 and 400 <= mouse_pos[1] <= 450:
+                    menu_aberto = False
+                    voltar_ao_menu_principal = True  # Define a variável de controle para voltar ao menu principal
 
-        if configurando:
-            configuracoes(screen)
-        else:
-            frame = next(frames)
+        if not menu_aberto:
+            try:
+                frame = next(frames)
+            except StopIteration:
+                break
+
+            # Limpar o fundo da tela
+            screen.fill((0, 0, 0))
+
             # Rotaciona o frame para a direita
             frame_rotacionado = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             frame_corrigido = cv2.flip(frame_rotacionado, 0)
@@ -96,6 +105,19 @@ def tocar():
             screen.blit(frame_surface, (pos_x, pos_y))
             pygame.display.flip()
             clock.tick(30)
+
+        # Verificar se a tecla Esc foi pressionada para fechar o menu
+        if menu_aberto and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            menu_aberto = False
+
+    # Liberar a câmera antes de retornar ao menu principal
+    del frames  # Liberar a referência ao objeto iterável
+    cv2.VideoCapture(0).release()  # Liberar a câmera
+
+    # Retornar ao menu principal (main()) após sair do loop
+    main()
+
+
 
 def sair():
     pygame.quit()
@@ -284,7 +306,7 @@ def configuracoes(screen):
 
         # Exibir botão de voltar
         pygame.draw.rect(screen, BRANCO, pygame.Rect(100, 400, 300, 50))
-        texto_voltar = fonte_opcoes.render("Fechar Menu", True, PRETO)  # Alterado o texto
+        texto_voltar = fonte_opcoes.render("Menu Principal", True, PRETO)  # Alterado o texto
         screen.blit(texto_voltar, (200, 410))
 
         pygame.display.flip()
