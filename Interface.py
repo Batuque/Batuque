@@ -5,7 +5,7 @@ import pygame
 import sys
 from Batuque import run_batuque
 import cv2
-import telaLogin, telaRegistro
+import screens.telaLogin as telaLogin, screens.telaRegistro as telaRegistro
 
 # Inicializar o Pygame
 pygame.init()
