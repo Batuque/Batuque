@@ -5,7 +5,7 @@ import pygame
 import sys
 from Batuque import run_batuque
 import cv2
-import screens.telaLogin as telaLogin, screens.telaRegistro as telaRegistro, screens.menu_volume as menu_volume
+import screens.telaLogin as telaLogin, screens.telaRegistro as telaRegistro, screens.menu_volume as menu_volume, screens.menu_resolucao as menu_resolucao
 
 # Inicializar o Pygame
 pygame.init()
@@ -139,68 +139,6 @@ def sair():
     pygame.quit()
     sys.exit()
 
-def menu_resolucoes():
-    # Definir fonte para o título
-    fonte_titulo = pygame.font.Font(None, 48)
-
-    # Definir fonte para as opções
-    fonte_opcoes = pygame.font.Font(None, 36)
-
-    # Título da tela de resoluções
-    titulo = fonte_titulo.render("Escolha a Resolução", True, BRANCO)
-
-    # Opções disponíveis de resolução
-    opcoes_resolucao = [
-        {"texto": "800x600", "resolucao": (800, 600)},
-        {"texto": "1024x768", "resolucao": (1024, 768)},
-        {"texto": "1280x720", "resolucao": (1280, 720)},
-        {"texto": "1440x900", "resolucao": (1440, 900)},
-        {"texto": "1920x1080", "resolucao": (1920, 1080)},
-        {"texto": "Voltar", "acao": "voltar"}
-    ]
-
-    # Espaço entre as opções
-    espaco = 20
-
-    # Loop principal da tela de resoluções
-    selecionando_resolucao = True
-    while selecionando_resolucao:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sair()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                # Verificar se o clique foi em uma opção de resolução
-                for opcao in opcoes_resolucao:
-                    if opcao.get("resolucao"):
-                        y_pos = (opcoes_resolucao.index(opcao) + 1) * (60 + espaco) + 100
-                        if mouse_pos[0] > 100 and mouse_pos[0] < 400 and mouse_pos[1] > y_pos and mouse_pos[1] < y_pos + 50:
-                            pygame.display.set_mode(opcao["resolucao"])
-                            selecionando_resolucao = False
-                            break
-                # Verificar se o clique foi no botão de voltar
-                if mouse_pos[0] > 100 and mouse_pos[0] < 400 and mouse_pos[1] > 650 and mouse_pos[1] < 700:
-                    selecionando_resolucao = False
-
-        tela.fill(PRETO)
-        tela.blit(titulo, (100, 50))
-
-        # Exibir opções de resolução
-        for opcao in opcoes_resolucao:
-            if opcao.get("resolucao"):
-                y_pos = (opcoes_resolucao.index(opcao) + 1) * (60 + espaco) + 100
-                pygame.draw.rect(tela, BRANCO, pygame.Rect(100, y_pos, 300, 50))
-                texto_renderizado = fonte_opcoes.render(opcao["texto"], True, PRETO)
-                tela.blit(texto_renderizado, (150, y_pos + 10))
-
-        # Exibir botão de voltar
-        pygame.draw.rect(tela, BRANCO, pygame.Rect(100, 650, 300, 50))
-        texto_voltar = fonte_opcoes.render("Voltar", True, PRETO)
-        tela.blit(texto_voltar, (200, 660))
-
-        pygame.display.flip()
-
-
 
 def configuracoes(screen):
     # Definir fonte para o título
@@ -211,9 +149,6 @@ def configuracoes(screen):
 
     # Título da tela de configurações
     titulo = fonte_titulo.render("Configurações", True, BRANCO)
-
-    # Espaço entre as opções
-    espaco = 20
 
     configurando = True
     while configurando:
@@ -228,10 +163,17 @@ def configuracoes(screen):
                 mouse_pos = pygame.mouse.get_pos()
                 # Verificar se o clique foi no botão de resolução
                 if 100 <= mouse_pos[0] <= 400 and 200 <= mouse_pos[1] <= 250:
-                    menu_resolucoes()
+                    resolucao = menu_resolucao.config_resolucoes(screen)
+                    if not resolucao:
+                        plot_tela_inicial()
+                        return False
+                    pygame.display.set_mode(resolucao)
                 # Verificar se o clique foi no botão de volume
                 elif 100 <= mouse_pos[0] <= 400 and 300 <= mouse_pos[1] <= 350:
                     volume = menu_volume.config_volume(screen)
+                    if not volume:
+                        plot_tela_inicial()
+                        return False
                     pygame.mixer.music.set_volume(volume)
                 # Verificar se o clique foi no botão de voltar
                 elif 100 <= mouse_pos[0] <= 400 and 400 <= mouse_pos[1] <= 450:
