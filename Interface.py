@@ -49,8 +49,15 @@ def plot_tela_inicial():
 
     pygame.display.flip()
 
+def loading_screen(loading_progress):
+    tela.fill(PRETO)
+    tela.blit(logo_image, (largura // 2 - logo_image.get_width() // 2, altura // 2 - logo_image.get_height() // 2))
 
-#TODO arrumar a tela de carregamento
+    # Desenhar a barra de progresso
+    pygame.draw.rect(tela, BRANCO, (100, altura - 50, loading_progress * (largura - 200), 20))
+
+    pygame.display.flip()
+
 def tocar(screen):
     pygame.init()
 
@@ -67,20 +74,17 @@ def tocar(screen):
         loading_screen(loading_progress)
         if tempo_decorrido >= tempo_carregamento:
             break
-    # Esperar um curto período de tempo para simular o carregamento
+
     pygame.time.wait(2000)
 
     # Iniciar a tela do pygame para o batuque
     clock = pygame.time.Clock()
     frames = cycle(run_batuque())
 
-    # Variável para controlar se o menu está aberto
     menu_aberto = False
 
-    # Variável de controle para determinar quando voltar ao menu principal
     voltar_ao_menu_principal = False
 
-    # Loop principal para a função tocar()
     while not voltar_ao_menu_principal:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -92,12 +96,12 @@ def tocar(screen):
                     if menu_aberto:
                         configuracoes(screen)
                     else:
-                        voltar_ao_menu_principal = True  # Define a variável de controle para voltar ao menu principal
-            elif event.type == MOUSEBUTTONDOWN and menu_aberto:  # Verifica o clique somente se o menu estiver aberto
+                        voltar_ao_menu_principal = True
+            elif event.type == MOUSEBUTTONDOWN and menu_aberto:
                 mouse_pos = pygame.mouse.get_pos()
                 if 100 <= mouse_pos[0] <= 400 and 400 <= mouse_pos[1] <= 450:
                     menu_aberto = False
-                    voltar_ao_menu_principal = True  # Define a variável de controle para voltar ao menu principal
+                    voltar_ao_menu_principal = True
 
         if not menu_aberto:
             try:
@@ -139,15 +143,9 @@ def sair():
     pygame.quit()
     sys.exit()
 
-
 def configuracoes(screen):
-    # Definir fonte para o título
     fonte_titulo = pygame.font.Font(None, 48)
-
-    # Definir fonte para as opções
     fonte_opcoes = pygame.font.Font(None, 36)
-
-    # Título da tela de configurações
     titulo = fonte_titulo.render("Configurações", True, BRANCO)
 
     configurando = True
@@ -158,7 +156,7 @@ def configuracoes(screen):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     configurando = False
-                    return False  # Indicar que o menu foi fechado
+                    return False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 # Verificar se o clique foi no botão de resolução
@@ -201,17 +199,6 @@ def configuracoes(screen):
 
     # Se o loop sair sem ter retornado False, significa que o menu não foi fechado
     return True
-
-
-# Função para mostrar a tela de loading
-def loading_screen(loading_progress):
-    tela.fill(PRETO)
-    tela.blit(logo_image, (largura // 2 - logo_image.get_width() // 2, altura // 2 - logo_image.get_height() // 2))
-
-    # Desenhar a barra de progresso
-    pygame.draw.rect(tela, BRANCO, (100, altura - 50, loading_progress * (largura - 200), 20))
-
-    pygame.display.flip()
 
 def main():
 
