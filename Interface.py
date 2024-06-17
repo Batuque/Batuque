@@ -5,6 +5,7 @@ import pygame
 import sys
 from Batuque import run_batuque
 import cv2
+import telaLogin, telaRegistro
 
 # Inicializar o Pygame
 pygame.init()
@@ -17,12 +18,15 @@ tela = pygame.display.set_mode((largura, altura), pygame.SCALED)
 # Carregar imagens
 background_image = pygame.image.load("src/Images/tela inicial/imagem_de_fundo.png")
 logo_image = pygame.image.load("src/Images/tela inicial/logo.png")
-button_play_image = pygame.image.load("src/Images/tela inicial/tocar.png")
-button_settings_image = pygame.image.load("src/Images/tela inicial/configura.png")
-button_exit_image = pygame.image.load("src/Images/tela inicial/sair.png")
+button_play_image = pygame.image.load("src/Images/tela inicial/tocar_button.svg")
+button_settings_image = pygame.image.load("src/Images/tela inicial/configuracoes_button.svg")
+button_exit_image = pygame.image.load("src/Images/tela inicial/sair_button.svg")
+button_login_image = pygame.image.load("src/Images/tela inicial/login_button.svg")
+button_registrar_image = pygame.image.load("src/Images/tela inicial/register_button.svg")
 
 # Carregar música
 pygame.mixer.music.load("src/Images/tela inicial/drum_no_copyright.mp3")
+pygame.mixer.music.set_volume(0.2)
 
 # Definir cores
 PRETO = (0, 0, 0)
@@ -32,6 +36,7 @@ BRANCO = (255, 255, 255)
 fonte = pygame.font.Font(None, 145)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
 
+#TODO arrumar a tela de carregamento
 def tocar():
     pygame.init()
 
@@ -117,17 +122,11 @@ def tocar():
     # Retornar ao menu principal (main()) após sair do loop
     main()
 
-
-
 def sair():
     pygame.quit()
     sys.exit()
 
 def menu_resolucoes():
-    # Definir cores
-    PRETO = (0, 0, 0)
-    BRANCO = (255, 255, 255)
-
     # Definir fonte para o título
     fonte_titulo = pygame.font.Font(None, 48)
 
@@ -189,10 +188,6 @@ def menu_resolucoes():
         pygame.display.flip()
 
 def menu_volume():
-    # Definir cores
-    PRETO = (0, 0, 0)
-    BRANCO = (255, 255, 255)
-
     # Definir fonte para o título
     fonte_titulo = pygame.font.Font(None, 48)
 
@@ -254,10 +249,6 @@ def menu_volume():
         pygame.display.flip()
 
 def configuracoes(screen):
-    # Definir cores
-    PRETO = (0, 0, 0)
-    BRANCO = (255, 255, 255)
-
     # Definir fonte para o título
     fonte_titulo = pygame.font.Font(None, 48)
 
@@ -343,10 +334,14 @@ def main():
     pygame.time.wait(2000)
 
     tela.blit(background_image, (0, 0))
-    tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 20))
-    tela.blit(button_settings_image, (largura // 4 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 20))
-    tela.blit(button_exit_image, (largura * 3 // 4 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 20))
+    tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
+    tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
+    tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
     tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
+
+    tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
+
+    tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
 
     pygame.display.flip()
 
@@ -361,19 +356,38 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Verificar se o clique foi nos botões
-                button_play_rect = button_play_image.get_rect(center=(largura // 2, altura - button_play_image.get_height() // 2 - 20))
-                button_settings_rect = button_settings_image.get_rect(center=(largura // 4, altura - button_settings_image.get_height() // 2 - 20))
-                button_exit_rect = button_exit_image.get_rect(center=(largura * 3 // 4, altura - button_exit_image.get_height() // 2 - 20))
+                button_play_rect = button_play_image.get_rect(center=(largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
+                button_settings_rect = button_settings_image.get_rect(center=(largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
+                button_exit_rect = button_exit_image.get_rect(center=(largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
+
+                #botão de login
+                button_login_rect = button_login_image.get_rect(center=(largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
+
+                # botão registro
+                button_registrar_rect = button_registrar_image.get_rect(center=(largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))
+
                 if button_play_rect.collidepoint(event.pos):
                     tocar()
                 elif button_settings_rect.collidepoint(event.pos):
                     if not configuracoes(tela):  # Verificar o retorno da função
-                        tela.blit(background_image, (0, 0))  # Redesenha o fundo
-                        tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 20))  # Redesenha os botões
-                        tela.blit(button_settings_image, (largura // 4 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 20))
-                        tela.blit(button_exit_image, (largura * 3 // 4 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 20))
-                        tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))  # Redesenha a mensagem de boas-vindas
+                        tela.blit(background_image, (0, 0))
+                        tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
+                        tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
+                        tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
+                        tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
+
+                        tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
+
+                        tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
                         pygame.display.flip()  # Atualiza a tela
+
+                # Tela de Login
+                elif button_login_rect.collidepoint(event.pos):
+                    telaLogin.login(tela, altura, largura)
+
+                # Tela de Cadastro
+                elif button_registrar_rect.collidepoint(event.pos):
+                    telaRegistro.registrar(tela, altura, largura)
 
                 elif button_exit_rect.collidepoint(event.pos):
                             sair()
