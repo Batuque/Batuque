@@ -36,15 +36,29 @@ BRANCO = (255, 255, 255)
 fonte = pygame.font.Font(None, 145)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
 
+def plot_tela_inicial():
+    tela.blit(background_image, (0, 0))
+    tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
+    tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
+    tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
+    tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
+
+    tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
+
+    tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
+
+    pygame.display.flip()
+
+
 #TODO arrumar a tela de carregamento
-def tocar():
+def tocar(screen):
     pygame.init()
 
     # Parar a música antes de iniciar
     pygame.mixer.music.stop()
 
     # Mostrar a tela de loading
-    tempo_carregamento = 2
+    tempo_carregamento = 4
     tempo_inicial = time.time()
     while True:
         tempo_atual = time.time()
@@ -57,7 +71,6 @@ def tocar():
     pygame.time.wait(2000)
 
     # Iniciar a tela do pygame para o batuque
-    screen = pygame.display.set_mode((largura, altura))
     clock = pygame.time.Clock()
     frames = cycle(run_batuque())
 
@@ -259,34 +272,8 @@ def loading_screen(loading_progress):
     pygame.display.flip()
 
 def main():
-    # Definir o tempo de carregamento (em segundos)
-    tempo_carregamento = 2
-    tempo_inicial = time.time()
 
-    # Mostrar a tela de loading
-    while True:
-        tempo_atual = time.time()
-        tempo_decorrido = tempo_atual - tempo_inicial
-        loading_progress = tempo_decorrido / tempo_carregamento
-        loading_screen(loading_progress)
-
-        if tempo_decorrido >= tempo_carregamento:
-            break
-    # Esperar um curto período de tempo para simular o carregamento
-    pygame.time.wait(2000)
-
-    tela.blit(background_image, (0, 0))
-    tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
-    tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
-    tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
-    tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
-
-    tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
-
-    tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
-
-    pygame.display.flip()
-
+    plot_tela_inicial()
     # Iniciar música
     pygame.mixer.music.play(-1)  # Loop infinito
 
@@ -309,19 +296,10 @@ def main():
                 button_registrar_rect = button_registrar_image.get_rect(center=(largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))
 
                 if button_play_rect.collidepoint(event.pos):
-                    tocar()
+                    tocar(tela)
                 elif button_settings_rect.collidepoint(event.pos):
                     if not configuracoes(tela):  # Verificar o retorno da função
-                        tela.blit(background_image, (0, 0))
-                        tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
-                        tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
-                        tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
-                        tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
-
-                        tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
-
-                        tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
-                        pygame.display.flip()  # Atualiza a tela
+                        plot_tela_inicial()
 
                 # Tela de Login
                 elif button_login_rect.collidepoint(event.pos):
