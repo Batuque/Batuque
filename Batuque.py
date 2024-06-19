@@ -46,9 +46,9 @@ def run_batuque():
         return mask
 
     # Configurações de cor para detecção
-    h_low, h_high = 145, 165
-    s_low, s_high = 150, 255
-    v_low, v_high = 150, 255
+    h_low, h_high = 155, 190
+    s_low, s_high = 40, 170
+    v_low, v_high = 210, 260
     pinkLower = (h_low, s_low, v_low)
     pinkUpper = (h_high, s_high, v_high)
 
