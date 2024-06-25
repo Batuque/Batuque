@@ -233,11 +233,13 @@ def main():
                 # Tela de Login
                 elif button_login_rect.collidepoint(event.pos):
                     telaLogin.login(tela, altura, largura)
+                    main()
 
                 # Tela de Cadastro
                 elif button_registrar_rect.collidepoint(event.pos):
                     telaRegistro.registrar(tela, altura, largura)
-
+                    main()
+                    
                 elif button_exit_rect.collidepoint(event.pos):
                             sair()
 
