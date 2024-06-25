@@ -11,6 +11,7 @@ def registrar(tela, altura, largura):
     input_box1 = pygame.Rect(largura // 2 - 200, altura // 1.5 - 225, 400, 50)
     input_box2 = pygame.Rect(largura // 2 - 200, altura // 1.5 - 125, 400, 50)
     input_box3 = pygame.Rect(largura // 2 - 200, altura // 1.5 - 25, 400, 50)  # Caixa de confirmação de senha
+    button_rect = pygame.Rect(largura // 2 - 200, altura // 1.5 + 75, 400, 50)
     button_return_rect = return_image.get_rect(center=(50, altura - return_image.get_height() - 750))
     
     color_inactive = pygame.Color('lightskyblue3')
@@ -48,6 +49,9 @@ def registrar(tela, altura, largura):
                     active3 = not active3
                 else:
                     active3 = False
+                if button_return_rect.collidepoint(event.pos):
+                    return False
+
                 color1 = color_active if active1 else color_inactive
                 color2 = color_active if active2 else color_inactive
                 color3 = color_active if active3 else color_inactive  # Atualização da cor
@@ -94,6 +98,7 @@ def registrar(tela, altura, largura):
         pygame.draw.rect(tela, color1, input_box1, 2)
         pygame.draw.rect(tela, color2, input_box2, 2)
         pygame.draw.rect(tela, color3, input_box3, 2)  # Desenha a caixa de confirmação de senha
+        pygame.draw.rect(tela, color_inactive, button_rect)
         
         fonte_h1_login = pygame.font.Font(None, 145)
         mensagem_boas_vindas = fonte_h1_login.render("Registrar", True, txt_color)
@@ -106,4 +111,5 @@ def registrar(tela, altura, largura):
         tela.blit(texto_senha, (input_box2.x, input_box2.y - 40))
         texto_confirmar_senha = fonte.render("Confirmar Senha:", True, txt_color)  # Texto para a confirmação de senha
         tela.blit(texto_confirmar_senha, (input_box3.x, input_box3.y - 40))
+        tela.blit(fonte.render("Cadastrar", True, txt_color), (button_rect.x + 125, button_rect.y + 10))
         pygame.display.flip()

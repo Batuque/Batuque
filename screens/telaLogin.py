@@ -10,6 +10,7 @@ def login(tela, altura, largura):
     
     input_box1 = pygame.Rect(largura // 2 - 200, altura // 1.5 - 225, 400, 50)
     input_box2 = pygame.Rect(largura // 2 - 200, altura // 1.5 - 125, 400, 50)
+    button_rect = pygame.Rect(largura // 2 - 200, altura // 1.5 - 25, 400, 50)
     button_return_rect = return_image.get_rect(center=(50, altura - return_image.get_height() - 750))
     
     color_inactive = pygame.Color('lightskyblue3')
@@ -73,10 +74,12 @@ def login(tela, altura, largura):
 
         tela.blit(txt_surface1, (input_box1.x + 5, input_box1.y + 5))
         tela.blit(txt_surface2, (input_box2.x + 5, input_box2.y + 5))
+
         
         pygame.draw.rect(tela, color1, input_box1, 2)
         pygame.draw.rect(tela, color2, input_box2, 2)
-        
+        pygame.draw.rect(tela, color_inactive, button_rect)
+
         fonte_h1_login = pygame.font.Font(None, 145)
         mensagem_boas_vindas = fonte_h1_login.render("Login", True, txt_color)
 
@@ -86,5 +89,6 @@ def login(tela, altura, largura):
         tela.blit(texto_usuario, (input_box1.x, input_box1.y - 40))
         texto_senha = fonte.render("Senha:", True, txt_color)
         tela.blit(texto_senha, (input_box2.x, input_box2.y - 40))
+        tela.blit(fonte.render("Entrar", True, txt_color), (button_rect.x + 150, button_rect.y + 10))
         
         pygame.display.flip()
