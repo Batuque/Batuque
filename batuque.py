@@ -4,6 +4,13 @@ import cv2
 import time
 from pygame import mixer
 
+# Configurações de cor para detecção
+h_low, h_high = 155, 190
+s_low, s_high = 40, 170
+v_low, v_high = 210, 260
+pinkLower = (h_low, s_low, v_low)
+pinkUpper = (h_high, s_high, v_high)
+
 def run_batuque():
     # Configurações de dimensão da janela da câmera
     width = 1920
@@ -45,29 +52,22 @@ def run_batuque():
             sound_played[sound_index] = False
         return mask
 
-    # Configurações de cor para detecção
-    h_low, h_high = 155, 190
-    s_low, s_high = 40, 170
-    v_low, v_high = 210, 260
-    pinkLower = (h_low, s_low, v_low)
-    pinkUpper = (h_high, s_high, v_high)
-
     # Iniciar a câmera
     camera = cv2.VideoCapture(0)
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-    # Carregar e redimensionar as imagens dos instrumentos
+    # Carregar e redimensionar as imagens dos instrumentos com canal alfa
     instruments = ['Chimbal.png', 'Caixa.png', 'Bumbo.png', 'Crash.png']
-    instrument_images = [cv2.resize(cv2.imread(f'./src/Images/{img}'), (200, 200), interpolation=cv2.INTER_CUBIC) for img in instruments]
-    Caixa = cv2.resize(instrument_images[1], (200, 150), interpolation=cv2.INTER_CUBIC)
+    instrument_images = [cv2.imread(f'./src/Images/{img}', cv2.IMREAD_UNCHANGED) for img in instruments]
+    instrument_images[1] = cv2.resize(instrument_images[1], (200, 150), interpolation=cv2.INTER_CUBIC)  # Redimensionar Caixa
 
     # Definir as regiões de interesse (ROI) dos instrumentos
     H, W = 720, 1280
     centers = [
         (W * 1 // 8, H * 4 // 8),  # Chimbal
         (W * 6 // 8, H * 6 // 8),  # Caixa
-        (W * 2 // 8, H * 6 // 8),  # Bumbo
+        (W * 4 // 8, H * 7 // 8),  # Bumbo
         (W * 7 // 8, H * 4 // 8)   # Crash
     ]
     sizes = [(200, 200), (200, 150), (200, 200), (200, 200)]
@@ -80,15 +80,35 @@ def run_batuque():
         if not ret:
             break
         frame = cv2.flip(frame, 1)
-        cv2.putText(frame, 'Projeto: Batuque', (10, 30), 2, 0.5, (20, 20, 20), 2)
+        cv2.putText(frame, 'Projeto: Batuque', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (20, 20, 20), 2)
 
         for i, (top_x, top_y, bottom_x, bottom_y) in enumerate(ROIs):
             roi = frame[top_y:bottom_y, top_x:bottom_x]
             mask = ROI_analysis(roi, i, pinkLower, pinkUpper)
-            overlay = instrument_images[i] if i != 1 else Caixa  # Caixa tem dimensão diferente
-            frame[top_y:bottom_y, top_x:bottom_x] = cv2.addWeighted(overlay, 1, frame[top_y:bottom_y, top_x:bottom_x], 1, 0)
 
-        yield frame
+            overlay = instrument_images[i]
+
+            # Ajuste de dimensões para garantir que overlay e roi tenham o mesmo tamanho
+            overlay_resized = cv2.resize(overlay, (roi.shape[1], roi.shape[0]))
+
+            if overlay_resized.shape[2] == 4:  # Verificar se a imagem tem canal alfa
+                # Separar os canais de cor e alfa
+                b, g, r, a = cv2.split(overlay_resized)
+                overlay_rgb = cv2.merge((b, g, r))
+
+                alpha_mask = a / 255.0 * 0.5  # 50% de transparência
+                alpha_inv = 1.0 - alpha_mask
+
+                for c in range(0, 3):
+                    frame[top_y:bottom_y, top_x:bottom_x, c] = (alpha_mask * overlay_rgb[:, :, c] +
+                                                                alpha_inv * frame[top_y:bottom_y, top_x:bottom_x, c])
+            else:
+                frame[top_y:bottom_y, top_x:bottom_x] = cv2.addWeighted(overlay_resized, 0.5, roi, 0.5, 0)
+
+        cv2.imshow('Batuque Project', frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     camera.release()
     cv2.destroyAllWindows()
