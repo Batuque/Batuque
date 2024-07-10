@@ -3,7 +3,7 @@ from itertools import cycle
 from pygame.locals import *
 import pygame
 import sys
-from Batuque import run_batuque
+from batuque import run_batuque
 import cv2
 import screens.telaLogin as telaLogin, screens.telaRegistro as telaRegistro, screens.menu_volume as menu_volume, screens.menu_resolucao as menu_resolucao
 
@@ -45,7 +45,7 @@ def plot_tela_inicial():
 
     tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
 
-    tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))  
+    tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))
 
     pygame.display.flip()
 
@@ -239,7 +239,7 @@ def main():
                 elif button_registrar_rect.collidepoint(event.pos):
                     telaRegistro.registrar(tela, altura, largura)
                     main()
-                    
+
                 elif button_exit_rect.collidepoint(event.pos):
                             sair()
 
