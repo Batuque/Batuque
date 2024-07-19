@@ -17,18 +17,19 @@ def run_batuque():
     height = 1080
 
     # Variáveis de tempo para controlar o tempo entre toques
-    last_played_time = [0, 0, 0, 0]
+    last_played_time = [0, 0, 0, 0, 0]
 
     # Variáveis de controle de estado de som
-    sound_played = [False, False, False, False]
+    sound_played = [False, False, False, False, False]
 
     # Inicializar o mixer do pygame
     mixer.init()
     drum_sounds = [
-        mixer.Sound('src/sounds/Caixa.mp3'),
         mixer.Sound('src/sounds/Chimbal.mp3'),
+        mixer.Sound('src/sounds/Caixa.mp3'),
         mixer.Sound('src/sounds/Bumbo.wav'),
-        mixer.Sound('src/sounds/Crash.mp3')
+        mixer.Sound('src/sounds/Crash.mp3'),
+        mixer.Sound('src/sounds/Caixa2.mp3')
     ]
 
     def state_machine(sound_index):
@@ -57,10 +58,10 @@ def run_batuque():
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-    # Carregar e redimensionar as imagens dos instrumentos com canal alfa
-    instruments = ['Chimbal.png', 'Caixa.png', 'Bumbo.png', 'Crash.png']
+    instruments = ['Chimbal.png', 'Caixa.png', 'Bumbo.png', 'Crash.png', 'Caixa2.png']
     instrument_images = [cv2.imread(f'./src/Images/{img}', cv2.IMREAD_UNCHANGED) for img in instruments]
     instrument_images[1] = cv2.resize(instrument_images[1], (200, 150), interpolation=cv2.INTER_CUBIC)  # Redimensionar Caixa
+    instrument_images[4] = cv2.resize(instrument_images[4], (200, 150), interpolation=cv2.INTER_CUBIC)  # Redimensionar Caixa espelhada
 
     # Definir as regiões de interesse (ROI) dos instrumentos
     H, W = 720, 1280
@@ -68,12 +69,12 @@ def run_batuque():
         (W * 1 // 8, H * 4 // 8),  # Chimbal
         (W * 6 // 8, H * 6 // 8),  # Caixa
         (W * 4 // 8, H * 7 // 8),  # Bumbo
-        (W * 7 // 8, H * 4 // 8)   # Crash
+        (W * 7 // 8, H * 4 // 8),  # Crash
+        (W * 2 // 8, H * 6 // 8)   # Caixa espelhada
     ]
-    sizes = [(200, 200), (200, 150), (200, 200), (200, 200)]
+    sizes = [(200, 200), (200, 150), (200, 200), (200, 200), (200, 150)]
 
     ROIs = [(center[0] - size[0] // 2, center[1] - size[1] // 2, center[0] + size[0] // 2, center[1] + size[1] // 2) for center, size in zip(centers, sizes)]
-
     # Loop principal
     while True:
         ret, frame = camera.read()
