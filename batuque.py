@@ -134,7 +134,6 @@ def run_batuque():
         footer_top_x, footer_top_y, footer_bottom_x, footer_bottom_y = footer_roi
         footer_roi_frame = frame[footer_top_y:footer_bottom_y, footer_top_x:footer_bottom_x]
         red_mask = red_area_analysis(footer_roi_frame, 2, redLower, redUpper)
-
         # Desenhar a borda ao redor da área de detecção de vermelho
         cv2.rectangle(frame, (footer_top_x, footer_top_y), (footer_bottom_x, footer_bottom_y), (0, 255, 0), 2)
 
