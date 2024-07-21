@@ -1,9 +1,6 @@
 import cv2
 import numpy as np
 from batuque import pinkLower, pinkUpper, redLower, redUpper
-from batuque import run_batuque
-
-# Configurações de cor para detecção
 
 def nothing(x):
     pass
@@ -57,7 +54,7 @@ def hsv_to_bgr(hsv_color):
     bgr_color = cv2.cvtColor(hsv_color, cv2.COLOR_HSV2BGR)[0][0]
     return bgr_color
 
-# Cria um frame de amostra para a cor rosa
+# Cria um frame de amostra
 def create_color_patch(color_lower, color_upper):
     color_patch = np.zeros((100, 300, 3), np.uint8)
     bgr_color_lower = hsv_to_bgr(color_lower)
@@ -75,7 +72,6 @@ while True:
     color_patch_pink = create_color_patch(pinkLower, pinkUpper)
     color_patch_red = create_color_patch(redLower, redUpper)
 
-    # Exibe os patches de cor
     cv2.imshow('Trackbars and Pink Color', color_patch_pink)
     cv2.imshow('Trackbars and Red Color', color_patch_red)
 
