@@ -1,13 +1,15 @@
 import time
-from itertools import cycle
-from pygame.locals import *
 import pygame
 import sys
-from batuque import run_batuque
+from itertools import cycle
+from pygame.locals import *
 import cv2
-import screens.telaLogin as telaLogin, screens.telaRegistro as telaRegistro, screens.menu_volume as menu_volume, screens.menu_resolucao as menu_resolucao
+from batuque import run_batuque
+import screens.telaLogin as telaLogin
+import screens.telaRegistro as telaRegistro
+import screens.menu_volume as menu_volume
+import screens.menu_resolucao as menu_resolucao
 
-# Inicializar o Pygame
 pygame.init()
 
 # Definir as dimensões da janela
@@ -37,40 +39,34 @@ fonte = pygame.font.Font(None, 145)
 mensagem_boas_vindas = fonte.render("Sinta o som do batuque!", True, BRANCO)
 
 def plot_tela_inicial():
+    """Desenha a tela inicial do jogo."""
     tela.blit(background_image, (0, 0))
     tela.blit(button_play_image, (largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
     tela.blit(button_settings_image, (largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
     tela.blit(button_exit_image, (largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
     tela.blit(mensagem_boas_vindas, (largura // 2 - mensagem_boas_vindas.get_width() // 2, altura // 8))
-
     tela.blit(button_login_image, (largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
-
     tela.blit(button_registrar_image, (largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))
-
     pygame.display.flip()
 
 def loading_screen(loading_progress):
+    """Desenha a tela de carregamento com a barra de progresso."""
     tela.fill(PRETO)
     tela.blit(logo_image, (largura // 2 - logo_image.get_width() // 2, altura // 2 - logo_image.get_height() // 2))
-
-    # Desenhar a barra de progresso
     pygame.draw.rect(tela, BRANCO, (100, altura - 50, loading_progress * (largura - 200), 20))
-
     pygame.display.flip()
 
 def tocar(screen):
-    pygame.init()
-
-    # Parar a música antes de iniciar
-    pygame.mixer.music.stop()
-
-    # Mostrar a tela de loading
+    """Inicia a tela do jogo e exibe o vídeo com opções de menu."""
+    pygame.mixer.music.stop()  # Parar a música antes de iniciar
     tempo_carregamento = 4
     tempo_inicial = time.time()
+
+    # Tela de carregamento
     while True:
         tempo_atual = time.time()
         tempo_decorrido = tempo_atual - tempo_inicial
-        loading_progress = tempo_decorrido / tempo_carregamento
+        loading_progress = min(tempo_decorrido / tempo_carregamento, 1)  # Garantir que o progresso não exceda 1
         loading_screen(loading_progress)
         if tempo_decorrido >= tempo_carregamento:
             break
@@ -80,9 +76,7 @@ def tocar(screen):
     # Iniciar a tela do pygame para o batuque
     clock = pygame.time.Clock()
     frames = cycle(run_batuque())
-
     menu_aberto = False
-
     voltar_ao_menu_principal = False
 
     while not voltar_ao_menu_principal:
@@ -109,18 +103,12 @@ def tocar(screen):
             except StopIteration:
                 break
 
-            # Limpar o fundo da tela
-            screen.fill((0, 0, 0))
-
-            # Rotaciona o frame para a direita
+            screen.fill(PRETO)
             frame_rotacionado = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             frame_corrigido = cv2.flip(frame_rotacionado, 0)
             frame_surface = pygame.surfarray.make_surface(cv2.cvtColor(frame_corrigido, cv2.COLOR_BGR2RGB))
 
-            # Obtém as dimensões da tela e da superfície da imagem
             imagem_largura, imagem_altura = frame_surface.get_size()
-
-            # Calcula a posição para centralizar a imagem
             pos_x = (largura - imagem_largura) // 2
             pos_y = (altura - imagem_altura) // 2
 
@@ -128,22 +116,19 @@ def tocar(screen):
             pygame.display.flip()
             clock.tick(30)
 
-        # Verificar se a tecla Esc foi pressionada para fechar o menu
         if menu_aberto and pygame.key.get_pressed()[pygame.K_ESCAPE]:
             menu_aberto = False
 
-    # Liberar a câmera antes de retornar ao menu principal
-    del frames  # Liberar a referência ao objeto iterável
     cv2.VideoCapture(0).release()  # Liberar a câmera
-
-    # Retornar ao menu principal (main()) após sair do loop
     main()
 
 def sair():
+    """Encerra o Pygame e sai do programa."""
     pygame.quit()
     sys.exit()
 
 def configuracoes(screen):
+    """Abre o menu de configurações."""
     fonte_titulo = pygame.font.Font(None, 48)
     fonte_opcoes = pygame.font.Font(None, 36)
     titulo = fonte_titulo.render("Configurações", True, BRANCO)
@@ -159,89 +144,70 @@ def configuracoes(screen):
                     return False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                # Verificar se o clique foi no botão de resolução
                 if 100 <= mouse_pos[0] <= 400 and 200 <= mouse_pos[1] <= 250:
                     resolucao = menu_resolucao.config_resolucoes(screen)
                     if not resolucao:
                         plot_tela_inicial()
                         return False
                     pygame.display.set_mode(resolucao)
-                # Verificar se o clique foi no botão de volume
                 elif 100 <= mouse_pos[0] <= 400 and 300 <= mouse_pos[1] <= 350:
                     volume = menu_volume.config_volume(screen)
                     if not volume:
                         plot_tela_inicial()
                         return False
                     pygame.mixer.music.set_volume(volume)
-                # Verificar se o clique foi no botão de voltar
                 elif 100 <= mouse_pos[0] <= 400 and 400 <= mouse_pos[1] <= 450:
                     return False
 
         screen.fill(PRETO)
         screen.blit(titulo, (100, 50))
 
-        # Exibir botão de resolução
         pygame.draw.rect(screen, BRANCO, pygame.Rect(100, 200, 300, 50))
         texto_resolucao = fonte_opcoes.render("Mudar Resolução", True, PRETO)
         screen.blit(texto_resolucao, (150, 210))
 
-        # Exibir botão de volume
         pygame.draw.rect(screen, BRANCO, pygame.Rect(100, 300, 300, 50))
         texto_volume = fonte_opcoes.render("Ajustar Volume", True, PRETO)
         screen.blit(texto_volume, (180, 310))
 
-        # Exibir botão de voltar
         pygame.draw.rect(screen, BRANCO, pygame.Rect(100, 400, 300, 50))
-        texto_voltar = fonte_opcoes.render("Menu Principal", True, PRETO)  # Alterado o texto
+        texto_voltar = fonte_opcoes.render("Menu Principal", True, PRETO)
         screen.blit(texto_voltar, (200, 410))
 
         pygame.display.flip()
 
-    # Se o loop sair sem ter retornado False, significa que o menu não foi fechado
     return True
 
 def main():
-
+    """Função principal que inicia a tela inicial e gerencia eventos do usuário."""
     plot_tela_inicial()
-    # Iniciar música
     pygame.mixer.music.play(-1)  # Loop infinito
 
-    # Loop principal do programa
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # Verificar se o clique foi nos botões
                 button_play_rect = button_play_image.get_rect(center=(largura // 2 - button_play_image.get_width() // 2, altura - button_play_image.get_height() - 225))
                 button_settings_rect = button_settings_image.get_rect(center=(largura // 2 - button_settings_image.get_width() // 2, altura - button_settings_image.get_height() - 150))
                 button_exit_rect = button_exit_image.get_rect(center=(largura // 2 - button_exit_image.get_width() // 2, altura - button_exit_image.get_height() - 75))
-
-                # botão de login
                 button_login_rect = button_login_image.get_rect(center=(largura // 2 - button_login_image.get_width() // 2, altura - button_login_image.get_height() - 375))
-
-                # botão registro
                 button_registrar_rect = button_registrar_image.get_rect(center=(largura // 2 - button_registrar_image.get_width() // 2, altura - button_registrar_image.get_height() - 300))
 
                 if button_play_rect.collidepoint(event.pos):
                     tocar(tela)
                 elif button_settings_rect.collidepoint(event.pos):
-                    if not configuracoes(tela):  # Verificar o retorno da função
+                    if not configuracoes(tela):
                         plot_tela_inicial()
-
-                # Tela de Login
                 elif button_login_rect.collidepoint(event.pos):
                     telaLogin.login(tela, altura, largura)
                     main()
-
-                # Tela de Cadastro
                 elif button_registrar_rect.collidepoint(event.pos):
                     telaRegistro.registrar(tela, altura, largura)
                     main()
-
                 elif button_exit_rect.collidepoint(event.pos):
-                            sair()
+                    sair()
 
         pygame.display.flip()
 

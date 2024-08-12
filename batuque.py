@@ -5,18 +5,11 @@ import time
 from pygame import mixer
 
 # Configurações de cor para detecção
-h_low, h_high = 155, 190
-s_low, s_high = 40, 170
-v_low, v_high = 210, 260
+h_low, h_high = 146, 172
+s_low, s_high = 116, 255
+v_low, v_high = 123, 255
 pinkLower = (h_low, s_low, v_low)
 pinkUpper = (h_high, s_high, v_high)
-
-# Configurações de cor para vermelho
-red_h_low, red_h_high = 170, 179
-red_s_low, red_s_high = 150, 255
-red_v_low, red_v_high = 60, 255
-redLower = (red_h_low, red_s_low, red_v_low)
-redUpper = (red_h_high, red_s_high, red_v_high)
 
 def run_batuque():
     # Configurações de dimensão da janela da câmera
@@ -25,9 +18,7 @@ def run_batuque():
 
     # Variáveis de tempo para controlar o tempo entre toques
     last_played_time = [0, 0, 0, 0, 0]
-
-    # Variáveis de controle de estado de som
-    sound_played = [False, False, False, False, False]
+    cooldown = 0.5  # Tempo em segundos entre toques
 
     # Inicializar o mixer do pygame
     mixer.init()
@@ -41,10 +32,9 @@ def run_batuque():
 
     def state_machine(sound_index):
         current_time = time.time()
-        drum_sounds[sound_index].stop()
-        drum_sounds[sound_index].play()
-        sound_played[sound_index] = True
-        last_played_time[sound_index] = current_time
+        if current_time - last_played_time[sound_index] >= cooldown:
+            drum_sounds[sound_index].play()
+            last_played_time[sound_index] = current_time
 
     def calc_mask(frame, lower, upper):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -53,21 +43,8 @@ def run_batuque():
     def ROI_analysis(roi, sound_index, lower, upper, min_value=30):
         mask = calc_mask(roi, lower, upper)
         summation = np.sum(mask)
-        if summation >= min_value and not sound_played[sound_index]:
-            sound_played[sound_index] = True
+        if summation >= min_value:
             state_machine(sound_index)
-        elif summation < min_value:
-            sound_played[sound_index] = False
-        return mask
-
-    def red_area_analysis(roi, sound_index, lower, upper, min_value=30):
-        mask = calc_mask(roi, lower, upper)
-        summation = np.sum(mask)
-        if summation >= min_value and not sound_played[sound_index]:
-            sound_played[sound_index] = True
-            state_machine(sound_index)
-        elif summation < min_value:
-            sound_played[sound_index] = False
         return mask
 
     # Iniciar a câmera
@@ -92,12 +69,6 @@ def run_batuque():
     sizes = [(200, 200), (200, 150), (200, 200), (200, 200), (200, 150)]
 
     ROIs = [(center[0] - size[0] // 2, center[1] - size[1] // 2, center[0] + size[0] // 2, center[1] + size[1] // 2) for center, size in zip(centers, sizes)]
-
-    # Adicionar nova área no rodapé para detecção de vermelho
-    footer_center = (W // 2, H - 50)
-    footer_size = (W , 50)
-    footer_roi = (footer_center[0] - footer_size[0] // 2, footer_center[1] - footer_size[1] // 2,
-                  footer_center[0] + footer_size[0] // 2, footer_center[1] + footer_size[1] // 2)
 
     # Loop principal
     while True:
@@ -130,13 +101,6 @@ def run_batuque():
             else:
                 frame[top_y:bottom_y, top_x:bottom_x] = cv2.addWeighted(overlay_resized, 0.5, roi, 0.5, 0)
 
-        # Detecção de vermelho na área do rodapé
-        footer_top_x, footer_top_y, footer_bottom_x, footer_bottom_y = footer_roi
-        footer_roi_frame = frame[footer_top_y:footer_bottom_y, footer_top_x:footer_bottom_x]
-        red_mask = red_area_analysis(footer_roi_frame, 2, redLower, redUpper)
-        # Desenhar a borda ao redor da área de detecção de vermelho
-        cv2.rectangle(frame, (footer_top_x, footer_top_y), (footer_bottom_x, footer_bottom_y), (0, 255, 0), 2)
-
         cv2.imshow('Batuque Project', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -145,4 +109,3 @@ def run_batuque():
     camera.release()
     cv2.destroyAllWindows()
     sys.exit()
-
