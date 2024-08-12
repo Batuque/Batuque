@@ -11,8 +11,8 @@ O projeto Batuque é uma aplicação que utiliza visão computacional para detec
 - **Controle de Volume e Resolução:** Permite ajustar o volume da música e a resolução da tela através do menu de configurações.
 
 ### Exemplo Visual do Projeto
-
-![Tela Inicial](src/Images/tela inicial/imagem_de_fundo.png)
+![Screenshot 2024-08-11 211550](https://github.com/user-attachments/assets/a8d3dca2-70ed-4246-8350-34b1ec0b187b)
+![Screenshot 2024-08-11 225320](https://github.com/user-attachments/assets/e3ebd3e8-0319-49c8-b83f-d77ef9b7bf95)
 
 ## ✔️ Técnicas e Tecnologias Utilizadas
 
