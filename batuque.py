@@ -23,11 +23,13 @@ def run_batuque():
     # Inicializar o mixer do pygame
     mixer.init()
     drum_sounds = [
+
         mixer.Sound('src/sounds/Chimbal/Chimbal.mp3'),
         mixer.Sound('src/sounds/Caixa/Caixa.mp3'),
         mixer.Sound('src/sounds/Bumbo/Bumbo.wav'),
         mixer.Sound('src/sounds/Crash/Crash.mp3'),
         mixer.Sound('src/sounds/Caixa2/Caixa2.mp3')
+
     ]
 
     def state_machine(sound_index):
