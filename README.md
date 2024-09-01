@@ -1,3 +1,5 @@
+## 🌐 [English Version of README](README_EN.md)
+
 # Batuque
 
 O projeto Batuque é uma aplicação que utiliza visão computacional para detectar cores em tempo real através da câmera e reproduzir sons de instrumentos de percussão com base nas cores detectadas. A interface gráfica é gerenciada com a biblioteca Pygame, proporcionando uma tela inicial interativa e menus de configuração.
