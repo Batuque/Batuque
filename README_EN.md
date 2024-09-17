@@ -18,7 +18,9 @@ The Batuque Project is an interactive application that combines color detection 
 
 ### Visual Example of the Project
 
-![Project Example](src/Images/tela_inicial/exemplo.png)  <!-- Replace with the path to the example image if available -->
+![Screenshot 2024-08-11 211550](https://github.com/user-attachments/assets/a8d3dca2-70ed-4246-8350-34b1ec0b187b)
+![Screenshot 2024-08-11 225320](https://github.com/user-attachments/assets/e3ebd3e8-0319-49c8-b83f-d77ef9b7bf95)
+![image](https://github.com/user-attachments/assets/c1a1b929-dbf9-4468-a144-8868e009d5ed)
 
 ## ✔️ Techniques and Technologies Used
 
